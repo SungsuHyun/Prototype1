@@ -8,7 +8,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   </head>
   <body>
-    <div class="device">
+    <div class="device" id="device">
+      <!-- Background Layer -->
+      <div class="wallpaper"></div>
+      
       <div class="status-bar">
         <span class="time">12:45</span>
         <div class="status-icons">
@@ -19,110 +22,97 @@
       </div>
 
       <main class="screen">
-        <div class="search-container">
-            <div class="search-bar">
-            <i class="fas fa-search search-icon"></i>
-            <input
-                id="searchInput"
-                class="search-input"
-                type="text"
-                placeholder="검색"
-                autocomplete="off"
-            />
-            <div class="search-actions">
-                <button class="mic-btn"><i class="fas fa-microphone"></i></button>
-                <button class="menu-btn"><i class="fas fa-ellipsis-v"></i></button>
+         <!-- Main Screen Content (Empty for now, just spacing) -->
+      </main>
+
+      <!-- Swipe Hint (Visible only on Home) -->
+      <div class="swipe-hint">
+        <div class="hint-bar"></div>
+        <span>위로 슬라이드</span>
+      </div>
+
+      <!-- Drawer Container -->
+      <div id="drawer" class="drawer">
+        
+        <!-- Search Only State: Top Hint & AI Suggestion -->
+        <div id="searchOnlyContent" class="search-only-content hidden">
+            <!-- Top Hint -->
+            <div class="drawer-hint">
+                <div class="hint-bar"></div>
+                <span>전체 앱 보기</span>
             </div>
+
+            <!-- AI Suggestion -->
+            <div class="ai-suggestion">
+                <video class="ai-icon-video" autoplay loop muted playsinline>
+                    <source src="ai_icon.mp4" type="video/mp4">
+                </video>
+                <span>저녁 7시, 강남역 팀 회식 장소 확인</span>
             </div>
         </div>
 
-        <!-- Initial App Grid -->
-        <div id="appGrid" class="app-grid">
-            <!-- Icons will be populated or static here -->
-            <div class="app-item">
-                <div class="app-icon-box camera">
-                    <i class="fas fa-camera"></i>
-                </div>
-                <span class="app-label">카메라</span>
-            </div>
-            <div class="app-item">
-                <div class="app-icon-box gallery">
-                    <i class="fas fa-image"></i>
-                </div>
-                <span class="app-label">갤러리</span>
-            </div>
-            <div class="app-item">
-                <div class="app-icon-box store">
-                    <i class="fas fa-shopping-bag"></i>
-                </div>
-                <span class="app-label">Store</span>
-            </div>
-            <div class="app-item">
-                <div class="app-icon-box contacts">
-                    <i class="fas fa-user"></i>
-                </div>
-                <span class="app-label">연락처</span>
-            </div>
-            <div class="app-item">
-                <div class="app-icon-box calculator">
-                    <i class="fas fa-calculator"></i>
-                </div>
-                <span class="app-label">계산기</span>
-            </div>
-            <div class="app-item">
-                <div class="app-icon-box messages">
-                    <i class="fas fa-comment"></i>
-                </div>
-                <span class="app-label">메시지</span>
-            </div>
-            <div class="app-item">
-                <div class="app-icon-box clock">
-                    <i class="fas fa-clock"></i>
-                </div>
-                <span class="app-label">시계</span>
-            </div>
-            <div class="app-item">
-                <div class="app-icon-box calendar">
-                    <span class="cal-date">3</span>
-                </div>
-                <span class="app-label">캘린더</span>
-            </div>
-             <div class="app-item">
-                <div class="app-icon-box settings">
-                     <i class="fas fa-cog"></i>
-                 </div>
-                 <span class="app-label">설정</span>
-            </div>
+        <!-- App Grid -->
+        <div id="appGrid" class="app-grid hidden">
+            <div class="app-item"><div class="app-icon-box camera"><i class="fas fa-camera"></i></div><span class="app-label">카메라</span></div>
+            <div class="app-item"><div class="app-icon-box gallery"><i class="fas fa-image"></i></div><span class="app-label">갤러리</span></div>
+            <div class="app-item"><div class="app-icon-box store"><i class="fas fa-shopping-bag"></i></div><span class="app-label">Store</span></div>
+            <div class="app-item"><div class="app-icon-box contacts"><i class="fas fa-user"></i></div><span class="app-label">연락처</span></div>
+            <div class="app-item"><div class="app-icon-box calculator"><i class="fas fa-calculator"></i></div><span class="app-label">계산기</span></div>
+            <div class="app-item"><div class="app-icon-box messages"><i class="fas fa-comment"></i></div><span class="app-label">메시지</span></div>
+            <div class="app-item"><div class="app-icon-box clock"><i class="fas fa-clock"></i></div><span class="app-label">시계</span></div>
+            <div class="app-item"><div class="app-icon-box calendar"><span class="cal-date">3</span></div><span class="app-label">캘린더</span></div>
+            <div class="app-item"><div class="app-icon-box settings"><i class="fas fa-cog"></i></div><span class="app-label">설정</span></div>
+            <div class="app-item"><div class="app-icon-box weather"><i class="fas fa-cloud-sun"></i></div><span class="app-label">날씨</span></div>
+            <div class="app-item"><div class="app-icon-box bixby"><span class="bixby-logo">b</span></div><span class="app-label">Bixby</span></div>
+            <div class="app-item"><div class="app-icon-box internet"><i class="fas fa-globe"></i></div><span class="app-label">인터넷</span></div>
         </div>
 
         <!-- Search Results (Generative UI) -->
         <section id="searchResults" class="content hidden">
-          <!-- Apps Panel (Moved to Top) -->
-          <div class="panel right-panel">
+        <div class="panel right-panel">
             <div class="panel-header">
-              <h2>관련 앱</h2>
-              <span class="badge" id="appCount">0</span>
+            <h2>관련 앱</h2>
+            <span class="badge" id="appCount">0</span>
             </div>
             <div id="appContent" class="panel-body"></div>
-          </div>
+        </div>
 
-          <!-- Generative UI Panel (Moved to Bottom) -->
-          <div class="panel left-panel">
+        <div class="panel left-panel">
             <div class="panel-header">
-              <h2>Generative UI</h2>
-              <span class="badge" id="aiStatus">대기</span>
+            <div class="gen-ui-header-content">
+                <h2>Generative UI</h2>
+                <video class="ai-icon-video-small" autoplay loop muted playsinline>
+                    <source src="ai_icon.mp4" type="video/mp4">
+                </video>
+            </div>
+            <span class="badge" id="aiStatus">대기</span>
             </div>
             <div id="aiContent" class="panel-body"></div>
-          </div>
+        </div>
         </section>
 
-        <div class="nav-bar">
-            <button class="nav-btn"><i class="fas fa-bars"></i></button>
-            <button class="nav-btn home"><div class="square"></div></button>
-            <button class="nav-btn"><i class="fas fa-chevron-left"></i></button>
+        <!-- Search Bar (Fixed at bottom of Drawer) -->
+        <div class="drawer-search-bar">
+            <div class="search-bar">
+                <i class="fas fa-search search-icon"></i>
+                <input
+                    id="searchInput"
+                    class="search-input"
+                    type="text"
+                    placeholder="검색"
+                    autocomplete="off"
+                />
+                <div class="search-actions">
+                    <button class="mic-btn"><i class="fas fa-microphone"></i></button>
+                    <button class="menu-btn"><i class="fas fa-ellipsis-v"></i></button>
+                </div>
+            </div>
         </div>
-        <div class="bottom-drag-handle"></div>
-      </main>
+      </div>
+      
+      <!-- Invisible Touch Area for Home Screen Swipe -->
+      <div id="touchArea" class="touch-area"></div>
+
     </div>
 
     <script src="app.js"></script>

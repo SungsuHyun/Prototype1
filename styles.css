@@ -33,38 +33,27 @@ body {
 .device {
   width: 380px;
   height: 800px;
-  /* Replicating the S-curve wallpaper: Muted Blue/Grey top, Dark 'S' shape, Peach bottom */
-  background: 
-    radial-gradient(circle at 80% 20%, #aab1c0 0%, transparent 50%),
-    radial-gradient(circle at 20% 80%, #e0c8bc 0%, transparent 60%),
-    linear-gradient(135deg, #7c7e8e 0%, #4a4c5a 50%, #3e3f4a 100%);
+  background-color: #2b2c35;
   border-radius: 40px;
   border: 8px solid #000000;
   box-shadow: 0 0 0 2px #333, 0 20px 50px rgba(0,0,0,0.3);
-  padding: 12px 16px 16px; /* Top padding for status bar */
+  /* padding removed to allow full screen overlay */
   display: flex;
   flex-direction: column;
   position: relative;
   overflow: hidden;
+  z-index: 1;
 }
 
-/* Simulated S-Curve shadow/shape overlay */
-.device::after {
-    content: "";
+/* Wallpaper Layer - Always Clear */
+.wallpaper {
     position: absolute;
-    top: 20%; left: 20%; right: 20%; bottom: 20%;
-    background: radial-gradient(circle, rgba(40, 40, 50, 0.4) 0%, transparent 70%);
-    filter: blur(40px);
-    z-index: 0;
-    pointer-events: none;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: url('background.jpg') no-repeat center center;
+    background-size: cover;
+    z-index: -2;
 }
 
-/* Ensure content is above background effects */
-.status-bar, .screen {
-    z-index: 1;
-}
-
-/* Status Bar */
 .status-bar {
   display: flex;
   justify-content: space-between;
@@ -73,7 +62,7 @@ body {
   font-weight: 600;
   color: #fff;
   text-shadow: 0 1px 2px rgba(0,0,0,0.1);
-  padding: 4px 8px 14px;
+  padding: 16px 24px 10px; /* Padding added here instead of container */
   z-index: 10;
 }
 
@@ -88,33 +77,47 @@ body {
   display: flex;
   flex-direction: column;
   position: relative;
+  padding: 0 16px 16px; /* Padding for screen content */
 }
 
-/* Search Bar */
-.search-container {
-    padding: 10px 0 30px 0;
+/* --- Drawer (Rectangular Area) --- */
+.drawer {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: rgba(30, 30, 35, 0.5); /* Transparent glassy background */
+    backdrop-filter: blur(30px) saturate(180%);
+    -webkit-backdrop-filter: blur(30px) saturate(180%);
+    border-radius: 32px 32px 0 0; /* Rounded top corners */
+    display: flex;
+    flex-direction: column;
+    transition: height 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    overflow: hidden;
+    z-index: 20;
+    height: 0; /* Initial State: Hidden */
+    box-shadow: 0 -10px 30px rgba(0,0,0,0.2);
+    /* border-top removed */
+}
+
+.drawer-search-bar {
+    padding: 20px 16px 30px; /* Bottom padding for safe area */
+    margin-top: auto; /* Push to bottom */
+    width: 100%;
 }
 
 .search-bar {
   background: var(--search-bg);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   height: 52px;
   border-radius: 26px;
   display: flex;
   align-items: center;
   padding: 0 16px;
   gap: 12px;
-  transition: all 0.3s ease;
   box-shadow: 0 4px 15px rgba(0,0,0,0.05);
 }
 
-.search-icon {
-    color: #fff;
-    font-size: 16px;
-    opacity: 0.8;
-}
-
+.search-icon { color: #fff; font-size: 16px; opacity: 0.8; }
 .search-input {
   flex: 1;
   background: transparent;
@@ -124,398 +127,238 @@ body {
   outline: none;
   text-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
+.search-input::placeholder { color: rgba(255, 255, 255, 0.7); }
+.search-actions { display: flex; gap: 16px; color: #fff; opacity: 0.8; }
+.mic-btn, .menu-btn { background: none; border: none; color: #fff; font-size: 16px; cursor: pointer; padding: 4px; opacity: 0.9; }
 
-.search-input::placeholder {
-  color: rgba(255, 255, 255, 0.7);
+/* Drawer States */
+/* State 1: Search Only (1/4 Height) */
+.device.state-portal .drawer {
+    height: 25%;
 }
 
-.search-actions {
-    display: flex;
-    gap: 16px;
-    color: #fff;
-    opacity: 0.8;
+/* State 2/3: Full Height (Apps/Results) */
+.device.state-apps .drawer,
+.device.state-results .drawer {
+    height: 100%; /* Full screen */
+    border-radius: 0; /* No rounded corners */
 }
 
-.mic-btn, .menu-btn {
-    background: none;
-    border: none;
-    color: #fff;
-    font-size: 16px;
-    cursor: pointer;
-    padding: 4px;
-    opacity: 0.9;
-}
 
-/* App Grid */
+/* App Grid Padding */
 .app-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     row-gap: 24px;
-    padding: 10px 0;
-    transition: opacity 0.3s ease, transform 0.3s ease;
+    padding: 100px 16px 30px; /* Top padding for status bar area */
+    overflow-y: auto;
+    flex: 1; /* Take available space above search bar */
+    align-content: start;
 }
 
-.app-grid.hidden {
-    display: none;
-    opacity: 0;
-    transform: scale(0.95);
-}
-
-.app-item {
+/* Results Content Padding */
+.content {
+    padding: 100px 16px 20px; /* Top padding for status bar area */
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 6px;
-    cursor: pointer;
+    gap: 16px;
+    overflow-y: auto;
+    flex: 1;
 }
 
+
+/* --- App Icon Styles (Reused) --- */
+.app-item { display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; }
 .app-icon-box {
-    width: 62px;
-    height: 62px;
-    border-radius: 26px; /* One UI squircle curvature */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 30px;
-    color: white;
-    background: #fff;
-    position: relative;
+    width: 62px; height: 62px; border-radius: 26px;
+    display: flex; justify-content: center; align-items: center;
+    font-size: 30px; color: white; background: #fff;
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
+.app-label { font-size: 13px; color: #fff; text-align: center; font-weight: 500; text-shadow: 0 1px 3px rgba(0,0,0,0.4); }
 
-.app-label {
-    font-size: 13px;
-    color: #fff;
-    text-align: center;
-    letter-spacing: -0.2px;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.4);
-    font-weight: 500;
+.gallery { background: #fff; color: #e84f5a; font-size: 32px; }
+.gallery i {
+    transform: rotate(45deg);
+    background: linear-gradient(45deg, #ff4b4b, #ff9068);
+    background-clip: text; -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent; color: transparent;
 }
+.store { background: linear-gradient(45deg, #ff4081, #ff80ab); font-size: 26px; }
+.contacts { background: #ff8e3e; font-size: 26px; }
+.calculator { background: #474a4d; color: #47cba8; font-size: 26px; }
+.messages { background: #3095f2; font-size: 26px; }
+.clock { background: #eee; color: #333; font-size: 28px; }
+.calendar { background: #fff; color: #000; font-size: 24px; position: relative; }
+.calendar::before { content: "FRI"; position: absolute; top: 12px; font-size: 9px; font-weight: 700; color: #777; }
+.settings { background: #6683b5; font-size: 26px; }
+.camera { background: #f5f5f5; color: #333; font-size: 28px; }
+.weather { background: linear-gradient(180deg, #64b5f6 0%, #1976d2 100%); }
+.bixby { background: linear-gradient(135deg, #304ffe 0%, #6200ea 100%); color: #fff; font-family: serif; font-style: italic; font-weight: 700; font-size: 36px; }
+.bixby-logo { display: block; line-height: 1; }
+.internet { background: linear-gradient(135deg, #7c4dff, #651fff); font-size: 30px; }
 
-/* Icon Colors - Refined to match One UI */
-.camera { 
-    background: #e84f5a; 
-    font-size: 26px; 
-}
-.gallery { 
-    background: #a546c4; 
-    font-size: 26px;
-    color: #fff;
-}
-.gallery::after {
-    display: none; /* Remove previous effect */
-}
-
-.store { 
-    background: #f56e87; 
-    font-size: 24px; 
-}
-.contacts { 
-    background: #ff8e3e; 
-    font-size: 26px; 
-}
-.calculator { 
-    background: #47cba8; 
-    color: #fff; 
-    font-size: 24px; 
-}
-.messages { 
-    background: #3095f2; 
-    font-size: 26px; 
-}
-.clock { 
-    background: #7bd4b4; 
-    color: #fff; 
-    font-size: 26px; 
-    border: none;
-}
-.clock i {
-    color: #fff;
-}
-
-.calendar { 
-    background: #fff; 
-    color: #000; 
-    font-size: 24px; 
-    position: relative; 
-    border: none;
-    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1);
-}
-.settings { 
-    background: #6683b5; 
-    font-size: 26px; 
-}
-
-.cal-date {
-    font-size: 26px;
-    font-weight: 600;
-    margin-top: 8px;
-    color: #333;
-    font-family: sans-serif;
-}
-
-.calendar::before {
-    content: "FRI";
-    position: absolute;
-    top: 12px;
-    font-size: 9px;
-    font-weight: 700;
-    color: #777;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-
-/* Search Results (Split View) */
-.content {
-  flex: 1;
-  display: flex;
-  flex-direction: column; /* Changed to column for vertical stacking */
-  gap: 16px; /* Increased gap */
-  overflow: hidden;
-  opacity: 0;
-  transform: translateY(20px);
-  transition: all 0.4s ease;
-  pointer-events: none;
-}
-
-.content.active {
-    opacity: 1;
-    transform: translateY(0);
-    pointer-events: auto;
-}
-
+/* Panels */
 .panel {
   background: var(--panel-bg);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-radius: 24px;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
+  display: flex; flex-direction: column; overflow: hidden;
 }
+.left-panel { flex: 1; }
+.right-panel { flex: 0 0 auto; }
+.panel-header { padding: 12px 16px 4px; border-bottom: none; display: flex; justify-content: space-between; align-items: center; }
+.panel-header h2 { font-size: 15px; font-weight: 600; }
 
-.left-panel { flex: 1; } /* Fill remaining space */
-.right-panel { flex: 0 0 auto; } /* Size to content */
-
-.panel-header {
-  padding: 16px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid var(--panel-border);
-}
-
-.panel-header h2 {
-  font-size: 15px;
-  font-weight: 600;
-}
-
-.badge {
-  font-size: 11px;
-  padding: 4px 8px;
-  border-radius: 12px;
-  background: #333;
-  color: #aaa;
-}
-
-.panel-body {
-  padding: 16px;
-  flex: 1;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-/* Card Styles in Results */
-.card {
-  background: rgba(42, 42, 42, 0.4);
-  padding: 14px;
-  border-radius: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  backdrop-filter: blur(10px);
-}
-
-.card-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: #fff;
-}
-
-.card-desc {
-  font-size: 13px;
-  color: #ccc;
-  line-height: 1.4;
-}
-
-.list-item {
-  display: flex;
-  justify-content: space-between;
-  background: rgba(51, 51, 51, 0.4);
-  padding: 10px 12px;
-  border-radius: 10px;
-  font-size: 13px;
-  margin-top: 4px;
-}
-
-/* Updated Right Panel App Display (Icons Only - Horizontal) */
-.right-panel .panel-body {
-    display: flex; /* Flex row for horizontal layout */
-    flex-direction: row;
-    gap: 32px; /* Increased space between icons for better touch target */
-    justify-content: center; /* Center icons */
-    align-items: center;
-    padding: 12px 16px 20px; /* Reduced vertical padding */
-}
-
-/* Compact Header for Apps Panel */
-.right-panel .panel-header {
-    padding: 12px 16px 4px; /* Reduced bottom padding */
-    border-bottom: none; /* Cleaner look for compact panel */
-}
-
-.app-row-icon-only {
-    width: 52px; /* Slightly smaller to fit compact view */
-    height: 52px;
+/* Gen UI Header with Video */
+.gen-ui-header-content {
     display: flex;
-    justify-content: center;
     align-items: center;
-    cursor: pointer;
-    transition: transform 0.2s;
+    gap: 8px;
 }
 
-/* Gen UI Highlight Effect */
-.gen-ui-active {
-    box-shadow: 0 0 0 1px rgba(62, 139, 255, 0.5), 0 0 20px rgba(62, 139, 255, 0.15);
-    border: 1px solid rgba(62, 139, 255, 0.3);
-    transition: all 0.5s ease;
+.ai-icon-video-small {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    object-fit: cover;
 }
+.badge { font-size: 11px; padding: 4px 8px; border-radius: 12px; background: #333; color: #aaa; }
+.panel-body { padding: 16px; flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
 
-/* Loading Skeleton for Gen UI */
-.skeleton-line {
-    height: 12px;
-    background: rgba(255,255,255,0.1);
-    border-radius: 6px;
-    margin-bottom: 8px;
-    animation: pulse 1.5s infinite;
-}
+/* Right Panel (Icons) */
+.right-panel .panel-body { display: flex; flex-direction: row; gap: 32px; justify-content: center; align-items: center; padding: 12px 16px 20px; }
+.app-row-icon-only { width: 52px; height: 52px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: transform 0.2s; }
+.icon-container { width: 56px; height: 56px; border-radius: 22px; display: flex; justify-content: center; align-items: center; font-size: 26px; color: white; background: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+.icon-kakao { background: #FEE500; color: #3C1E1E; font-size: 28px; }
+.icon-samsung-msg { background: #3095f2; }
+.icon-calendar { background: #fff; color: #000; position: relative; }
+.icon-calendar::before { content: "3"; font-weight: 700; font-size: 22px; margin-top: 4px; }
+
+/* Gen UI Styles */
+.card { background: rgba(42, 42, 42, 0.4); padding: 14px; border-radius: 16px; display: flex; flex-direction: column; gap: 8px; backdrop-filter: blur(10px); }
+.card-title { font-size: 14px; font-weight: 600; color: #fff; }
+.card-desc { font-size: 13px; color: #ccc; line-height: 1.4; }
+.list-item { display: flex; justify-content: space-between; background: rgba(51, 51, 51, 0.4); padding: 10px 12px; border-radius: 10px; font-size: 13px; margin-top: 4px; }
+.gen-ui-active { box-shadow: 0 0 0 1px rgba(62, 139, 255, 0.5), 0 0 20px rgba(62, 139, 255, 0.15); border: 1px solid rgba(62, 139, 255, 0.3); transition: all 0.5s ease; }
+.skeleton-line { height: 12px; background: rgba(255,255,255,0.1); border-radius: 6px; margin-bottom: 8px; animation: pulse 1.5s infinite; }
 .skeleton-line.w-80 { width: 80%; }
 .skeleton-line.w-60 { width: 60%; }
-
-@keyframes pulse {
-    0% { opacity: 0.3; }
-    50% { opacity: 0.6; }
-    100% { opacity: 0.3; }
-}
-
-.app-row-icon-only:hover {
-    transform: scale(1.05);
-}
-
-/* Reusing .app-icon-box styles but slightly smaller if needed, or reusing classes */
-.icon-container {
-    width: 56px;
-    height: 56px;
-    border-radius: 22px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 26px;
-    color: white;
-    background: #fff;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
-
-.icon-kakao {
-    background: #FEE500;
-    color: #3C1E1E;
-    font-size: 28px;
-}
-
-.icon-samsung-msg {
-    background: #3095f2; 
-}
-
-.icon-calendar {
-    background: #fff;
-    color: #000;
-    position: relative;
-}
-.icon-calendar::before {
-    content: "3";
-    font-weight: 700;
-    font-size: 22px;
-    margin-top: 4px;
-}
-
-/* Original list view classes kept for compatibility or left panel */
-.app-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: rgba(42, 42, 42, 0.5);
-  padding: 10px;
-  border-radius: 14px;
-}
-
-.app-row .app-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  background: #444;
-}
-
-.app-row .app-name {
-    font-size: 13px;
-    font-weight: 600;
-}
-
-.app-row .app-meta {
-    font-size: 11px;
-    color: #999;
-}
-
+@keyframes pulse { 0% { opacity: 0.3; } 50% { opacity: 0.6; } 100% { opacity: 0.3; } }
 .ai-active { color: #81c995; background: rgba(129, 201, 149, 0.1); }
 .ai-warn { color: #fdd663; background: rgba(253, 214, 99, 0.1); }
 
-/* Nav Bar */
-.nav-bar {
-    height: 48px;
+/* AI Suggestion (State 1) */
+.search-only-content {
+    position: absolute;
+    top: 25%; /* Moved up from 40% */
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
     display: flex;
-    justify-content: space-around;
+    flex-direction: column;
     align-items: center;
-    margin-top: auto;
-    padding-bottom: 8px;
+    gap: 20px; /* Reduced gap from 30px */
+    animation: fadeIn 0.5s ease;
 }
 
-.nav-btn {
-    background: none;
-    border: none;
-    color: #aaa;
-    font-size: 20px;
-    padding: 10px 20px;
+.drawer-hint {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    opacity: 0.8;
 }
 
-.nav-btn .square {
-    width: 16px;
-    height: 16px;
-    border: 2px solid #aaa;
-    border-radius: 4px;
-}
-
-.bottom-drag-handle {
-    width: 100px;
+.drawer-hint .hint-bar {
+    width: 36px;
     height: 4px;
-    background: #444;
+    background: rgba(255, 255, 255, 0.5);
     border-radius: 2px;
-    align-self: center;
-    margin-bottom: 4px;
+    box-shadow: none; /* Flatter look inside drawer */
+}
+
+.drawer-hint span {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.ai-suggestion {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.ai-icon-video {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%; /* Optional: if video needs rounded corners */
+    object-fit: cover;
+}
+
+.ai-suggestion span {
+    color: rgba(255, 255, 255, 0.95);
+    font-size: 15px;
+    font-weight: 500;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translate(-50%, -40%); }
+    to { opacity: 1; transform: translate(-50%, -50%); }
+}
+
+/* Touch Area for Home */
+.touch-area {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 15; /* Above wallpaper/status bar, below drawer */
+}
+
+/* Swipe Hint */
+.swipe-hint {
+    position: absolute;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    z-index: 18; /* Above touch area, below drawer */
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.device.state-home .swipe-hint {
+    opacity: 1;
+    animation: bounceHint 2s infinite;
+}
+
+.hint-bar {
+    width: 36px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 2px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.swipe-hint span {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 11px;
+    font-weight: 500;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+    letter-spacing: 0.5px;
+}
+
+@keyframes bounceHint {
+    0%, 100% { transform: translate(-50%, 0); opacity: 0.8; }
+    50% { transform: translate(-50%, -6px); opacity: 1; }
 }
 
 /* Utils */
-.hidden {
-    display: none !important;
-}
+.hidden { display: none !important; }

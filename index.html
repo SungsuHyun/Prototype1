@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>One UI Search</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  </head>
+  <body>
+    <div class="device">
+      <div class="status-bar">
+        <span class="time">12:45</span>
+        <div class="status-icons">
+          <i class="fas fa-signal"></i>
+          <i class="fas fa-wifi"></i>
+          <i class="fas fa-battery-full"></i>
+        </div>
+      </div>
+
+      <main class="screen">
+        <div class="search-container">
+            <div class="search-bar">
+            <i class="fas fa-search search-icon"></i>
+            <input
+                id="searchInput"
+                class="search-input"
+                type="text"
+                placeholder="검색"
+                autocomplete="off"
+            />
+            <div class="search-actions">
+                <button class="mic-btn"><i class="fas fa-microphone"></i></button>
+                <button class="menu-btn"><i class="fas fa-ellipsis-v"></i></button>
+            </div>
+            </div>
+        </div>
+
+        <!-- Initial App Grid -->
+        <div id="appGrid" class="app-grid">
+            <!-- Icons will be populated or static here -->
+            <div class="app-item">
+                <div class="app-icon-box camera">
+                    <i class="fas fa-camera"></i>
+                </div>
+                <span class="app-label">카메라</span>
+            </div>
+            <div class="app-item">
+                <div class="app-icon-box gallery">
+                    <i class="fas fa-image"></i>
+                </div>
+                <span class="app-label">갤러리</span>
+            </div>
+            <div class="app-item">
+                <div class="app-icon-box store">
+                    <i class="fas fa-shopping-bag"></i>
+                </div>
+                <span class="app-label">Store</span>
+            </div>
+            <div class="app-item">
+                <div class="app-icon-box contacts">
+                    <i class="fas fa-user"></i>
+                </div>
+                <span class="app-label">연락처</span>
+            </div>
+            <div class="app-item">
+                <div class="app-icon-box calculator">
+                    <i class="fas fa-calculator"></i>
+                </div>
+                <span class="app-label">계산기</span>
+            </div>
+            <div class="app-item">
+                <div class="app-icon-box messages">
+                    <i class="fas fa-comment"></i>
+                </div>
+                <span class="app-label">메시지</span>
+            </div>
+            <div class="app-item">
+                <div class="app-icon-box clock">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <span class="app-label">시계</span>
+            </div>
+            <div class="app-item">
+                <div class="app-icon-box calendar">
+                    <span class="cal-date">3</span>
+                </div>
+                <span class="app-label">캘린더</span>
+            </div>
+             <div class="app-item">
+                <div class="app-icon-box settings">
+                     <i class="fas fa-cog"></i>
+                 </div>
+                 <span class="app-label">설정</span>
+            </div>
+        </div>
+
+        <!-- Search Results (Generative UI) -->
+        <section id="searchResults" class="content hidden">
+          <!-- Apps Panel (Moved to Top) -->
+          <div class="panel right-panel">
+            <div class="panel-header">
+              <h2>관련 앱</h2>
+              <span class="badge" id="appCount">0</span>
+            </div>
+            <div id="appContent" class="panel-body"></div>
+          </div>
+
+          <!-- Generative UI Panel (Moved to Bottom) -->
+          <div class="panel left-panel">
+            <div class="panel-header">
+              <h2>Generative UI</h2>
+              <span class="badge" id="aiStatus">대기</span>
+            </div>
+            <div id="aiContent" class="panel-body"></div>
+          </div>
+        </section>
+
+        <div class="nav-bar">
+            <button class="nav-btn"><i class="fas fa-bars"></i></button>
+            <button class="nav-btn home"><div class="square"></div></button>
+            <button class="nav-btn"><i class="fas fa-chevron-left"></i></button>
+        </div>
+        <div class="bottom-drag-handle"></div>
+      </main>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
